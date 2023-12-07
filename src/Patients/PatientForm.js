@@ -14,7 +14,7 @@ const PatientForm = ({ onAdd }) => {
   const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/doctors')
+    axios.get('http://13.51.86.49:5000/doctors')
       .then((response) => {
         setDoctors(response.data);
       })
