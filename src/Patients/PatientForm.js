@@ -1,107 +1,137 @@
-import React,{useEffect,useState} from "react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const PatientsForm=({onAdd})=>{
-    const [formData,setFromData]=useState({
-        name:'',
-        weigth:'',
-        gender:'',
-        age:'',
-        disese:'',
-        doctor:'',
-    });
+const PatientForm = ({ onAdd }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    weight: '',
+    gender: '',
+    age: '',
+    disease: '',
+    doctor: '',
+  });
 
-    const [doctors,setDoctors]=useState([]);
+  const [doctors, setDoctors] = useState([]);
 
-    useEffect(()=>{
-        axios.get('http://localhost:5000/doctors')
-        .then((response)=>{
-            setDoctors(response.data);
-        })
-        .catch((error)=>{
-            console.error('error fetching doctor',error);
-        });
-    },[]);
+  useEffect(() => {
+    axios.get('http://localhost:5000/doctors')
+      .then((response) => {
+        setDoctors(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching doctor data:', error);
+      });
+  }, []);
 
-    const handleChange=(e)=>{
-        const {name,value}=e.target;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-        setFromData({...formData,[name]:value});
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Create a new patient object with the form data
+    const newPatient = {
+      name: formData.name,
+      weight: formData.weight,
+      gender: formData.gender,
+      age: formData.age,
+      disease: formData.disease,
+      doctor: formData.doctor,
     };
 
-    const handleSubmit=(e)=>{
-        e.preventDefault();
+    // Send a POST request to the JSON server to add the new patient
+    axios.post('http://13.51.86.49:5000/patients', newPatient)
+      .then((response) => {
+        // Call the onAdd callback to update the patient list in the parent component
+        onAdd(response.data);
 
-        const newPatient={
-            name:formData.name,
-            weigth:formData.weigth,
-            gender:formData.gender,
-            age:formData.age,
-            disese:formData.disese,
-            doctor:formData.doctor,
-        };
-
-        axios.post('http://localhost:5000/patients',newPatient)
-        .then((response)=>{
-            onAdd(response.data);
-
-            setFromData({
-                name:'',
-                weigth:'',
-                gender:'',
-                age:'',
-                disese:'',
-                doctor:'',
-            });
-        })
-        .catch((error)=>{
-            console.error('the error in adding patient data',error);
+        // Clear the form fields
+        setFormData({
+          name: '',
+          weight: '',
+          gender: '',
+          age: '',
+          disease: '',
+          doctor: '',
         });
-
-    };
-
-    return(
-        <form onSubmit={handleSubmit}>
-        <div>
-            <label htmlFor="name">Enter Name:</label>
-            <input type="text" id="name" name="name" value={formData.name} onChange={handleChange}/>
-        </div>
-
-        <div>
-            <label htmlFor="weigth">Enter Weight:</label>
-            <input type="text" id="weigth" name="weigth" value={formData.weigth} onChange={handleChange}/>
-        </div>
-
-        <div>
-            <label htmlFor="gender">Enter Gender:</label>
-            <input type="text" id="gender" name="gender" value={formData.gender} onChange={handleChange}/>
-        </div>
-
-        <div>
-            <label htmlFor="age">Enter Age:</label>
-            <input type="text" id="age" name="age" value={formData.age} onChange={handleChange}/>
-        </div>
-
-        <div>
-            <label htmlFor="disese">Enter disese:</label>
-            <input type="text" id="disese" name="disese" value={formData.disese} onChange={handleChange}/>
-        </div>
-
-        <div>
-            <label htmlFor="doctor">Enter doctor:</label>
-            {/* <input type="text" id="doctor" name="doctor" value={formData.doctor} onChange={handleChange}/> */}
-
-            <select id="doctor" name="doctor" value={formData.doctor} onChange={handleChange}>
-                <option value=''>select a doctor</option>
-                {doctors.map((doctor)=>(
-                    <option key={doctor.id} value={doctor.name}>
-                        {doctor.name}
-                    </option>
-                ))}
-            </select>
-        </div>
-            <button type="submit">Create</button>
-        </form>
-    );
+      })
+      .catch((error) => {
+        console.error('Error adding patient data:', error);
+      });
+  };
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="name">Enter Name:</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <label htmlFor="weight">Enter Weight:</label>
+        <input
+          type="text"
+          id="weight"
+          name="weight"
+          value={formData.weight}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <label htmlFor="gender">Enter Gender:</label>
+        <input
+          type="text"
+          id="gender"
+          name="gender"
+          value={formData.gender}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <label htmlFor="age">Enter Age:</label>
+        <input
+          type="text"
+          id="age"
+          name="age"
+          value={formData.age}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <label htmlFor="disease">Enter Disease:</label>
+        <input
+          type="text"
+          id="disease"
+          name="disease"
+          value={formData.disease}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <label htmlFor="doctor">Select Doctor:</label>
+        <select
+          id="doctor"
+          name="doctor"
+          value={formData.doctor}
+          onChange={handleChange}
+        >
+          <option value="">Select a doctor</option>
+          {doctors.map((doctor) => (
+            <option key={doctor.id} value={doctor.name}>
+              {doctor.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <button type="submit">Create</button>
+    </form>
+  );
 };
-export default PatientsForm;
+
+export default PatientForm;
