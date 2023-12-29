@@ -4,7 +4,7 @@ const DoctorList = ({ doctors, onDelete, onEdit }) => {
   const [editableData, setEditableData] = useState(null);
 
   const handleEditClick = (doctor) => {
-    setEditableData({ ...doctor });
+    setEditableData({...doctor});
   };
 
   const handleSaveClick = () => {
